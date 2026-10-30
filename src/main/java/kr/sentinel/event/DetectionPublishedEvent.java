@@ -1,4 +1,9 @@
 package kr.sentinel.event;
 
-public class DetectionPublishedEvent {
+import kr.sentinel.detection.Detection;
+
+public record DetectionPublishedEvent(
+        Long commandLogId,
+        Detection detection
+) {
 }

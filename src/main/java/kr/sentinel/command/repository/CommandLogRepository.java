@@ -14,6 +14,8 @@ public interface CommandLogRepository extends JpaRepository<CommandLog, Long> {
 
     long countByProcessedTrue();
 
+    long countByLabeledAnomalyTrue();
+
     long countByClientIdAndFunctionCodeInAndIssuedAtBetween(
             String clientId,
             Collection<Integer> functionCodes,

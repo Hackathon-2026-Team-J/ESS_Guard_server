@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: ess-sentinel
+  datasource:
+    url: jdbc:h2:mem:sentinel
+    driver-class-name: org.h2.Driver

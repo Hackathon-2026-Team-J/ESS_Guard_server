@@ -14,28 +14,30 @@ import lombok.Builder;
 public record EventResponse(
         @Schema(description = "탐지 이벤트 ID", example = "1")
         Long id,
-        @Schema(description = "탐지 규칙 ID", example = "R2")
+        @Schema(description = "탐지 규칙 ID", example = "R1")
         String ruleId,
         @Schema(description = "심각도", example = "HIGH")
         Severity severity,
-        @Schema(description = "탐지 메시지", example = "읽기 전용 계정의 쓰기 명령")
+        @Schema(description = "탐지 메시지", example = "계획 방향(충전)과 반대인 방전 명령")
         String message,
         @Schema(description = "탐지 시각", example = "2026-11-07T09:01:02")
         LocalDateTime detectedAt,
-        @Schema(description = "원인 명령 로그 ID", example = "4")
-        Long commandLogId,
-        @Schema(description = "명령을 보낸 클라이언트 ID", example = "HMI-01")
-        String clientId,
-        @Schema(description = "클라이언트 역할", example = "MONITOR")
-        ClientRole role,
         @Schema(description = "대상 ESS 장치 ID", example = "ESS-02")
         String deviceId,
-        @Schema(description = "Modbus 기능 코드 (6, 16은 쓰기 명령)", example = "6")
-        int functionCode,
-        @Schema(description = "레지스터 주소", example = "11")
-        int registerAddress,
-        @Schema(description = "명령 값", example = "20")
-        int value,
+        @Schema(description = "원인 명령 로그 ID (측정값 기반 탐지면 null)", example = "4", nullable = true)
+        Long commandLogId,
+        @Schema(description = "원인 측정값 ID (명령 기반 탐지면 null)", example = "12", nullable = true)
+        Long telemetryId,
+        @Schema(description = "명령을 보낸 클라이언트 ID (측정값 기반 탐지면 null)", example = "HMI-01", nullable = true)
+        String clientId,
+        @Schema(description = "클라이언트 역할 (측정값 기반 탐지면 null)", example = "MONITOR", nullable = true)
+        ClientRole role,
+        @Schema(description = "Modbus 기능 코드, 6과 16은 쓰기 명령 (측정값 기반 탐지면 null)", example = "6", nullable = true)
+        Integer functionCode,
+        @Schema(description = "레지스터 주소 (측정값 기반 탐지면 null)", example = "11", nullable = true)
+        Integer registerAddress,
+        @Schema(description = "명령 값 (측정값 기반 탐지면 null)", example = "20", nullable = true)
+        Integer value,
         @Schema(description = "명령 시점의 ESS 상태 (없으면 null)", example = "RUNNING", nullable = true)
         EssState essState
 ) {
@@ -44,16 +46,23 @@ public record EventResponse(
             DetectionEvent event,
             CommandLog commandLog
     ) {
-        return EventResponse.builder()
+        EventResponseBuilder builder = EventResponse.builder()
                 .id(event.getId())
                 .ruleId(event.getRuleId())
                 .severity(event.getSeverity())
                 .message(event.getMessage())
                 .detectedAt(event.getDetectedAt())
+                .deviceId(event.getDeviceId())
                 .commandLogId(event.getCommandLogId())
+                .telemetryId(event.getTelemetryId());
+
+        if (commandLog == null) {
+            return builder.build();
+        }
+
+        return builder
                 .clientId(commandLog.getClientId())
                 .role(commandLog.getRole())
-                .deviceId(commandLog.getDeviceId())
                 .functionCode(commandLog.getFunctionCode())
                 .registerAddress(commandLog.getRegisterAddress())
                 .value(commandLog.getValue())

@@ -2,6 +2,7 @@ package kr.sentinel.command.repository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import kr.sentinel.command.domain.CommandLog;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +11,13 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface CommandLogRepository extends JpaRepository<CommandLog, Long> {
 
-    Optional<CommandLog> findFirstByProcessedFalseOrderByIdAsc();
+    Optional<CommandLog> findFirstByProcessedFalseOrderByIssuedAtAscIdAsc();
+
+    List<CommandLog> findAllByDeviceIdAndProcessedTrueAndIssuedAtBetweenOrderByIssuedAtAscIdAsc(
+            String deviceId,
+            LocalDateTime from,
+            LocalDateTime to
+    );
 
     long countByProcessedTrue();
 

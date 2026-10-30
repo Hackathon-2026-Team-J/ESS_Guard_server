@@ -18,8 +18,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_command_log_processed_id", columnList = "processed, id"),
-        @Index(name = "idx_command_log_client_id_issued_at", columnList = "client_id, issued_at")
+        @Index(name = "idx_command_log_processed_issued_at", columnList = "processed, issued_at"),
+        @Index(name = "idx_command_log_client_id_issued_at", columnList = "client_id, issued_at"),
+        @Index(name = "idx_command_log_device_id_issued_at", columnList = "device_id, issued_at")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommandLog {
@@ -53,6 +54,9 @@ public class CommandLog {
     @Column(name = "command_value", nullable = false)
     private int value;
 
+    @Column(name = "command_kw", nullable = false)
+    private int commandKw;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "ess_state")
     private EssState essState;
@@ -71,6 +75,7 @@ public class CommandLog {
             int functionCode,
             int registerAddress,
             int value,
+            int commandKw,
             EssState essState,
             boolean labeledAnomaly
     ) {
@@ -81,6 +86,7 @@ public class CommandLog {
         this.functionCode = functionCode;
         this.registerAddress = registerAddress;
         this.value = value;
+        this.commandKw = commandKw;
         this.essState = essState;
         this.labeledAnomaly = labeledAnomaly;
         this.processed = false;
@@ -94,6 +100,7 @@ public class CommandLog {
             int functionCode,
             int registerAddress,
             int value,
+            int commandKw,
             EssState essState,
             boolean labeledAnomaly
     ) {
@@ -105,6 +112,7 @@ public class CommandLog {
                 .functionCode(functionCode)
                 .registerAddress(registerAddress)
                 .value(value)
+                .commandKw(commandKw)
                 .essState(essState)
                 .labeledAnomaly(labeledAnomaly)
                 .build();
@@ -120,5 +128,9 @@ public class CommandLog {
 
     public boolean isWrite() {
         return functionCode == WRITE_SINGLE_REGISTER || functionCode == WRITE_MULTIPLE_REGISTERS;
+    }
+
+    public Direction getDirection() {
+        return Direction.from(commandKw);
     }
 }

@@ -30,8 +30,14 @@ public class DetectionEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "command_log_id", nullable = false)
+    @Column(name = "device_id", nullable = false, length = 50)
+    private String deviceId;
+
+    @Column(name = "command_log_id")
     private Long commandLogId;
+
+    @Column(name = "telemetry_id")
+    private Long telemetryId;
 
     @Column(name = "rule_id", nullable = false, length = 10)
     private String ruleId;
@@ -48,13 +54,17 @@ public class DetectionEvent {
 
     @Builder(access = AccessLevel.PRIVATE)
     private DetectionEvent(
+            String deviceId,
             Long commandLogId,
+            Long telemetryId,
             String ruleId,
             Severity severity,
             String message,
             LocalDateTime detectedAt
     ) {
+        this.deviceId = deviceId;
         this.commandLogId = commandLogId;
+        this.telemetryId = telemetryId;
         this.ruleId = ruleId;
         this.severity = severity;
         this.message = message;
@@ -62,12 +72,16 @@ public class DetectionEvent {
     }
 
     public static DetectionEvent create(
+            String deviceId,
             Long commandLogId,
+            Long telemetryId,
             Detection detection,
             LocalDateTime detectedAt
     ) {
         return DetectionEvent.builder()
+                .deviceId(deviceId)
                 .commandLogId(commandLogId)
+                .telemetryId(telemetryId)
                 .ruleId(detection.ruleId())
                 .severity(detection.severity())
                 .message(detection.message())

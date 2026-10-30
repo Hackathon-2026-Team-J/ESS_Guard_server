@@ -3,7 +3,7 @@ EMS 제어명령 로그를 실시간으로 분석해 ESS를 노리는 이상 명
 
 ## EC2 배포
 
-`main`에 push되면 GitHub Actions가 이미지를 Docker Hub에 올리고 EC2에서 재기동한다.
+`dev`에 push되면 GitHub Actions가 이미지를 Docker Hub에 올리고 EC2에서 재기동한다.
 
 사전 조건: EC2(Ubuntu)에 Docker와 Compose plugin 설치, 보안 그룹에서 22, 8080 인바운드 허용
 

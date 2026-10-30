@@ -1,7 +1,7 @@
 package kr.sentinel.detection;
 
 import java.util.Optional;
-import kr.sentinel.command.CommandLog;
+import kr.sentinel.command.domain.CommandLog;
 
 public interface Rule {
 

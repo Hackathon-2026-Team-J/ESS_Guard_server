@@ -1,0 +1,41 @@
+services:
+  app:
+    image: ${DOCKER_USERNAME:?}/${DOCKER_REPO:?}
+    container_name: ess-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Asia/Seoul -Xms256m -Xmx512m
+      - MYSQL_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE:?}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      - MYSQL_USERNAME=${MYSQL_USERNAME:?}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?}
+
+  mysql:
+    image: mysql:8.4
+    container_name: ess-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE:?}
+      - MYSQL_USER=${MYSQL_USERNAME:?}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?}
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+
+volumes:
+  mysql-data:

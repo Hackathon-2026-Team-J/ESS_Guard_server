@@ -4,3 +4,8 @@ spring:
   datasource:
     url: jdbc:h2:mem:sentinel
     driver-class-name: org.h2.Driver
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method

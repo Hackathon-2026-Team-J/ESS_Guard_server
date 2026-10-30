@@ -2,6 +2,7 @@ package kr.sentinel.event;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kr.sentinel.command.domain.CommandLog;
@@ -38,6 +39,7 @@ public class EventService {
     private Map<Long, CommandLog> getCommandIdToLog(List<DetectionEvent> events) {
         List<Long> commandLogIds = events.stream()
                 .map(DetectionEvent::getCommandLogId)
+                .filter(Objects::nonNull)
                 .distinct()
                 .toList();
 

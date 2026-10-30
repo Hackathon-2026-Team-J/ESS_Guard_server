@@ -24,9 +24,16 @@ public class DetectionListener {
 
     @EventListener
     public void handle(DetectionPublishedEvent event) {
-        DetectionEvent detectionEvent = detectionEventRepository.save(
-                DetectionEvent.create(event.commandLogId(), event.detection(), LocalDateTime.now()));
-        CommandLog commandLog = commandLogRepository.getReferenceById(event.commandLogId());
+        DetectionEvent detectionEvent = detectionEventRepository.save(DetectionEvent.create(
+                event.deviceId(),
+                event.commandLogId(),
+                event.telemetryId(),
+                event.detection(),
+                LocalDateTime.now()
+        ));
+        CommandLog commandLog = event.commandLogId() == null
+                ? null
+                : commandLogRepository.getReferenceById(event.commandLogId());
 
         sseHub.send(DETECTION_EVENT, EventResponse.of(detectionEvent, commandLog));
     }
